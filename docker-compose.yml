@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  fullstack-test-db:
+    image: mysql:5.7
+    container_name: fullstack-test-db
+    environment:
+      MYSQL_ROOT_PASSWORD: pumpkin
+      MYSQL_DATABASE: pumpkin
+      MYSQL_USER: pumpkin
+      MYSQL_PASSWORD: pumpkin
+    ports:
+      - 3306:3306
+    volumes:
+      - ./db-data:/var/lib/mysql
+  fullstack-test-api:
+    container_name: fullstack-test-api
+    depends_on:
+      - fullstack-test-db
+    image: python:3.7.5
+    ports:
+      - 8085:8085
+    volumes:
+    - ./backend:/api
+    command: ["bash", "api/entrypoint.sh"]
+
