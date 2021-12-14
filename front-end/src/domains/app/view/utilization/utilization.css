@@ -1,0 +1,14 @@
+.container {
+    padding: 30px;
+    font-family: Helvetica;
+}
+
+th, td {
+    width: 300px;
+    text-align: left;
+    padding: 10px;
+}
+
+th {
+    background: lightgray;
+}
