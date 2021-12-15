@@ -3,11 +3,13 @@ import { useDispatch, useSelector } from "react-redux";
 import Container from 'react-bootstrap/Container';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
+import Modal from 'react-bootstrap/Modal'
 import BootstrapTable from 'react-bootstrap-table-next';
 import Select from 'react-select';
 import { loadData, manageUpdateTables } from "../../thunks/load-data";
 import { getAppClaims, } from "../../selectors";
 import { Button } from "react-bootstrap";
+
 
 import styles from './home-page.css';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
@@ -16,6 +18,11 @@ import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 export default function HomePage() {
     const dispatch = useDispatch();
     const claims = useSelector(getAppClaims) || {}; //access claims data from store
+    const [isOpen, setIsOpen] = React.useState(false);
+    
+      const hideModal = () => {
+        setIsOpen(false);
+      };
 
     const columns = [
         {
@@ -48,7 +55,7 @@ export default function HomePage() {
             { value: "denied", label: 'Denied' }
         ];
 
-        if(row.decision.toLowerCase() === 'approved'){
+        if (row.decision.toLowerCase() === 'approved') {
             return (
                 <Select
                     name="decision-field-select"
@@ -58,7 +65,7 @@ export default function HomePage() {
                 />
             );
         }
-        else{
+        else {
             return (
                 <Select
                     name="decision-field-select"
@@ -70,10 +77,13 @@ export default function HomePage() {
         }
     }
 
-    function handleOnChange(row, e){
-        if(e.value === "approved"){
-            alert('Utilization Table is being updated. Please clikc VIew Utilization Button to get more info.')
-            dispatch(manageUpdateTables(row, claims.data.body.data[0].id, e.value));
+    function handleOnChange(row, e) {
+        if (e.value === "approved") {
+            setIsOpen(true)
+            dispatch(manageUpdateTables(row, claims.data.body.data[0].id, e.value, 'approved'));
+        }
+        else{
+            dispatch(manageUpdateTables(row, claims.data.body.data[0].id, e.value, 'denied'));
         }
     }
 
@@ -99,7 +109,7 @@ export default function HomePage() {
 
                 <hr />
 
-                <Container fluid>
+                <Container>
                     <Row>
                         <Col>
                             <p><b>Claim Type:</b></p>
@@ -115,13 +125,22 @@ export default function HomePage() {
                             claims_list ? <BootstrapTable keyField="id" data={claims_list} columns={columns} /> : null
                         }
                     </Row>
-                    <Row className="link-to-utilization-btn-row" style={{float: 'right', marginRight: "0px"}}>
-                        <Button href={linkToUtilizations} variant="primary" size="md" style={{width: "150px"}}>
+                    <Row className="link-to-utilization-btn-row" style={{ float: 'right', marginRight: "0px" }}>
+                        <Button href={linkToUtilizations} variant="primary" size="md" style={{ width: "150px" }}>
                             View Utilizations
                         </Button>
                     </Row>
                 </Container>
 
+                <Modal show={isOpen} onHide={hideModal}>
+                    <Modal.Header>
+                        <Modal.Title>Utilization Update</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>Utilization Table is being updated. Please click View Utilization button to get more info.</Modal.Body>
+                    <Modal.Footer>
+                        <button onClick={hideModal}>OK</button>
+                    </Modal.Footer>
+                </Modal>
             </div>
         );
     }

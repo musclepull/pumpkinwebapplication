@@ -83,7 +83,7 @@ export function loadUtilizationData(claim_id){
     }
 }
 
-export const manageUpdateTables = (row, claim_id, value) => {
+export const manageUpdateTables = (row, claim_id, value, status) => {
     return (dispatch) => {
         //save row item => save utilization table
         axios.post(`${BASE_API}/claims/update`, {
@@ -92,7 +92,8 @@ export const manageUpdateTables = (row, claim_id, value) => {
             quantity: row.quantity,
             decision: value,
             amount_claimed: row.amount_claimed,
-            claim_id: claim_id,       
+            claim_id: claim_id,
+            status: status       
         }).then(function (new_updated_util_obj) {
             dispatch(setManageUtilizationTable(row, new_updated_util_obj))
         })
